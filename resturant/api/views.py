@@ -36,7 +36,7 @@ class TableViewSet(viewsets.ModelViewSet):
 
         if restaurant_id:
             
-            return Table.objects.filter(restaurant_id=restaurant_id, is_available=True)
+            return Table.objects.filter(restaurant_id=restaurant_id)
 
         return Table.objects.none()
    
