@@ -15,28 +15,27 @@ class TableViewSet(viewsets.ModelViewSet):
     serializer_class = TableSerializer
     permission_classes = [IsRestaurantAdminUserorReadOnly]
 
-
     
     def get_queryset(self):
         user = self.request.user
-        restaurant_id = self.request.query_params.get('restaurant_id')
+        restaurant_id = self.request.query_params.get('restaurant_id')  
+
 
         if user.is_authenticated and user.is_superuser:
-
-            return Table.objects.all()  
+            
+            return Table.objects.all()
 
         if user.is_authenticated and getattr(user, 'is_restaurant_admin', False):
-
             if user.restaurant:
-
+                
                 return Table.objects.filter(restaurant=user.restaurant)
-        else:
+        
+            return Table.objects.none()
 
-            return Table.objects.none()  
-
+        
         if restaurant_id:
-            
-            return Table.objects.filter(restaurant_id=restaurant_id)
+            tables = Table.objects.filter(restaurant_id=restaurant_id, is_available=True)
+            return tables
 
         return Table.objects.none()
    
@@ -69,9 +68,11 @@ class TableViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
 
+        user = self.request.user
+
         table = self.get_object()
 
-        if request.user == table.restaurant.admin or request.user.is_superuser:
+        if user.is_superuser or (user.is_restaurant_admin and table.restaurant == user.restaurant):
 
             return super().update(request, *args, **kwargs)
         
