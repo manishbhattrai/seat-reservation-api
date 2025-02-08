@@ -17,6 +17,11 @@ class IsAdminUserReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         
-        return request.user and request.user.is_superuser
+        if request.user and request.user.is_superuser:
+            print("User is a superuser.")
+            return True
+        else:
+            print("Permission denied.")
+            return False
     
 
