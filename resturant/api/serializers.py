@@ -6,11 +6,11 @@ class ResturantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ['name','location','phone_number','status']
+        fields = '__all__'
 
 
 class TableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Table
-        fields = ['numbers','seats','is_available']
+        fields = '__all__'
