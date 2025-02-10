@@ -11,8 +11,12 @@ class Reservation(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='reservations', null=True)
     is_completed = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('customer', 'date', 'restaurant')
+
+
     def __str__(self):
-        return f"reservation for {self.customer.username} for {self.date}"
+        return f"reservation for {self.customer.username} at {self.restaurant} on {self.date}"
     
 
     

@@ -20,19 +20,18 @@ class ReservationViewSets(viewsets.ModelViewSet):
     def perform_create(self, serializer):
 
         try:
-        
-         customer = self.request.user
-         tables = serializer.validated_data['table_no']
-         date = serializer.validated_data['date']
-         restaurant_name = serializer.validated_data['restaurant_name']
+            customer = self.request.user
+            tables = serializer.validated_data['table_no']
+            date = serializer.validated_data['date']
+            restaurant_name = serializer.validated_data['restaurant_name']
 
-         try:
+            reservation = ReservationService.create_reservation(
+                restaurant_name, customer, tables, date
+            )
 
-          reservation = ReservationService.create_reservation(restaurant_name,customer, tables, date)
+            serializer.save(customer=customer, date=date, restaurant=reservation.restaurant)
 
-          serializer.save(customer=customer, date=date, reservation=reservation.restaurant)
-
-         except ValueError as e:
+        except ValueError as e:
            raise ValidationError(str(e))
         
         except Exception as e:  

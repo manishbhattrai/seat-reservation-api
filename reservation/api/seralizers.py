@@ -21,35 +21,45 @@ class ReservationSerializer(serializers.ModelSerializer):
 
             tables = data.get('table_no')
             date = data.get('date')
+            restaurant_name = data.get('restaurant_name')
+
+            customer = self.context['request'].user
             
 
+            if Reservation.objects.filter(customer=customer, restaurant__name=restaurant_name, date=date).exists():
+             raise serializers.ValidationError("One or more tables are already reserved at the requested time.")
+            
             if not ReservationService.check_table_availability(tables, date):
              raise serializers.ValidationError("One or more tables are already reserved at the requested time.")
         
             return data
         
-        def create(self, validated_data):
-           
-           restaurant_name = validated_data.pop('restaurant_name')
+    def create(self, validated_data):
+        restaurant_name = validated_data.pop("restaurant_name", None)
 
+        if not restaurant_name:
+            raise serializers.ValidationError({"restaurant_name": "This field is required."})
 
-           try:
-              restaurant = Restaurant.objects.get(name = restaurant_name)
-            
-           except Restaurant.DoesNotExist:
-              raise serializers.ValidationError("Restaurant doesnot exists.")
-           
-           customer = self.context['request'].user
-           
-           reservation = ReservationService.create_reservation(
-            restaurant=restaurant,
-            tables=validated_data.get('table_no'),
-            date=validated_data.get('date'),
-            customer=customer
+    
+        try:
+            restaurant = Restaurant.objects.get(name=restaurant_name)
+        except Restaurant.DoesNotExist:
+            raise serializers.ValidationError({"restaurant_name": "Restaurant does not exist."})
+
+        customer = self.context["request"].user
+        date = validated_data.get("date")
+        table_no = validated_data.get("table_no")
+
+    
+        reservation = ReservationService.create_reservation(
+        restaurant=restaurant,
+        tables=table_no,
+        date=date,
+        customer=customer,
         )
-        
 
-           return reservation
+        return reservation
+
            
 
 
