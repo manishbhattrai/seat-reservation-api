@@ -10,5 +10,4 @@ urlpatterns = [
 
     path('', include(router.urls)),
     path('my-reservations/', ReservationView.as_view(), name='my-reservations'),
-
 ]

@@ -10,7 +10,7 @@ from reservation.services import *
 class ReservationSerializer(serializers.ModelSerializer):
 
     table_no = serializers.PrimaryKeyRelatedField(queryset = Table.objects.all(), many = True)
-    restaurant_name = serializers.CharField(write_only =True)
+    restaurant_name = serializers.CharField(write_only = True)
     customer = serializers.CharField(source = 'customer.username', read_only = True)
 
     class Meta:

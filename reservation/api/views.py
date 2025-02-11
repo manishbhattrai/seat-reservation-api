@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from reservation.models import Reservation
 from reservation.services import *
 from rest_framework.exceptions import ValidationError
+from .permissions import IsRestaurantAdmin
+
 
 
 class ReservationViewSets(viewsets.ModelViewSet):
@@ -39,10 +41,14 @@ class ReservationViewSets(viewsets.ModelViewSet):
 
 
 
-    @action(detail=True, methods=['post'], url_path='complete')
+    @action(detail=True, methods=['post'], url_path='complete', permission_classes = [IsRestaurantAdmin])
     def mark_as_completed(self, request, pk=None):
         
         reservation = self.get_object()
+
+        if not request.user.is_restaurant_admin:
+            return Response({"message":"Restaurant Admin can only perfrom this actions."}, status= status.HTTP_403_FORBIDDEN)
+        
         ReservationService.mark_as_completed(reservation)
 
         return Response({"message": "Reservation marked as completed."}, status=status.HTTP_200_OK)
@@ -59,5 +65,3 @@ class ReservationView(APIView):
         serializer = ReservationSerializer(reservation, many = True)
         return Response(serializer.data)
     
-
-
