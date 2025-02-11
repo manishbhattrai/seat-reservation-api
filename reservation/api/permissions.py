@@ -5,7 +5,21 @@ class IsRestaurantAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
 
         if not request.user.is_authenticated:
+
             return False
         
         
-        return hasattr(request.user, 'restaurant') and request.user == request.user.is_restaurant_admin
+        if not hasattr(request.user, 'restaurant'):
+
+            return False
+        
+        return True
+    
+    def has_object_permission(self, request, view, obj):
+
+        if obj.restaurant.admin == request.user:
+
+            return True
+        
+        return False
+           

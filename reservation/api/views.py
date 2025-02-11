@@ -45,10 +45,6 @@ class ReservationViewSets(viewsets.ModelViewSet):
     def mark_as_completed(self, request, pk=None):
         
         reservation = self.get_object()
-
-        if not request.user.is_restaurant_admin:
-            return Response({"message":"Restaurant Admin can only perfrom this actions."}, status= status.HTTP_403_FORBIDDEN)
-        
         ReservationService.mark_as_completed(reservation)
 
         return Response({"message": "Reservation marked as completed."}, status=status.HTTP_200_OK)
